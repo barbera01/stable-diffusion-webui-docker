@@ -19,15 +19,11 @@ x-base_service: &base_service
 services:
   download:
     build: ./services/download/
-    profiles: 
-      - download
     volumes:
       - ./data:/data
 
   auto:
     <<: *base_service
-    profiles: 
-      - auto
     build: ./services/AUTOMATIC1111
     image: sd-auto:78
     environment:
@@ -35,8 +31,6 @@ services:
 
   auto-cpu:
     <<: *base_service
-    profiles: 
-      - auto-cpu
     build: ./services/AUTOMATIC1111
     image: sd-auto:78
     environment:
@@ -45,8 +39,6 @@ services:
 
   comfy:
     <<: *base_service
-    profiles: 
-      - comfy
     build: ./services/comfy/
     image: sd-comfy:7
     environment:
@@ -54,8 +46,6 @@ services:
 
   comfy-cpu:
     <<: *base_service
-    profiles: 
-      - comfy-cpu
     build: ./services/comfy/
     image: sd-comfy:7
     environment:
