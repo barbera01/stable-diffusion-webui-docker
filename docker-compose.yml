@@ -1,21 +1,5 @@
 version: "3.8"
 
-x-base_service: &base_service
-  ports:
-    - "${WEBUI_PORT:-7860}:7860"
-  volumes:
-    - ./data:/data
-    - ./output:/output
-  stop_signal: SIGKILL
-  tty: true
-  deploy:
-    resources:
-      reservations:
-        devices:
-          - driver: nvidia
-            device_ids: ['0']
-            capabilities: [compute, utility]
-
 services:
   download:
     build: ./services/download/
@@ -23,14 +7,33 @@ services:
       - ./data:/data
 
   auto:
-    <<: *base_service
+    ports:
+      - "${WEBUI_PORT:-7860}:7860"
+    volumes:
+      - ./data:/data
+      - ./output:/output
+    stop_signal: SIGKILL
+    tty: true
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['0']
+              capabilities: [compute, utility]
     build: ./services/AUTOMATIC1111
     image: sd-auto:78
     environment:
       - CLI_ARGS=--allow-code --medvram --xformers --enable-insecure-extension-access --api
 
   auto-cpu:
-    <<: *base_service
+    ports:
+      - "${WEBUI_PORT:-7860}:7860"
+    volumes:
+      - ./data:/data
+      - ./output:/output
+    stop_signal: SIGKILL
+    tty: true
     build: ./services/AUTOMATIC1111
     image: sd-auto:78
     environment:
@@ -38,14 +41,33 @@ services:
     deploy: {}
 
   comfy:
-    <<: *base_service
+    ports:
+      - "${WEBUI_PORT:-7860}:7860"
+    volumes:
+      - ./data:/data
+      - ./output:/output
+    stop_signal: SIGKILL
+    tty: true
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['0']
+              capabilities: [compute, utility]
     build: ./services/comfy/
     image: sd-comfy:7
     environment:
       - CLI_ARGS=
 
   comfy-cpu:
-    <<: *base_service
+    ports:
+      - "${WEBUI_PORT:-7860}:7860"
+    volumes:
+      - ./data:/data
+      - ./output:/output
+    stop_signal: SIGKILL
+    tty: true
     build: ./services/comfy/
     image: sd-comfy:7
     environment:
