@@ -1,26 +1,52 @@
-version: "3.9"
 
 services:
-  stable-diffusion-webui:
-    image: abdbarho/stable-diffusion-webui:latest
-    container_name: stable-diffusion-webui
-    environment:
-      - CLI_ARGS=--skip-torch-cuda-test
-      - NVIDIA_VISIBLE_DEVICES=all
+  download:
+    build: ./services/download/
     volumes:
-      - stable-diffusion-models:/models
-      - ./outputs:/outputs
+      - ./data:/data
+
+  auto:
+    build: ./services/AUTOMATIC1111
+    image: sd-auto:78
+    environment:
+      - CLI_ARGS=--allow-code --medvram --xformers --enable-insecure-extension-access --api
     ports:
-      - 7860:7860
+      - "${WEBUI_PORT:-7860}:7860"
+    volumes:
+      - ./data:/data
+      - ./output:/output
+    stop_signal: SIGKILL
+    tty: true
     deploy:
       resources:
         reservations:
           devices:
             - driver: nvidia
-              count: 1
-              capabilities: [gpu]
+              device_ids: ['0']
+              capabilities: [compute, utility]
     runtime: nvidia
-    restart: unless-stopped
+
+  comfy:
+    build: ./services/comfy/
+    image: sd-comfy:7
+    environment:
+      - CLI_ARGS=
+    ports:
+      - "${WEBUI_PORT:-7860}:7860"
+    volumes:
+      - ./data:/data
+      - ./output:/output
+    stop_signal: SIGKILL
+    tty: true
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['0']
+              capabilities: [compute, utility]
+    runtime: nvidia
 
 volumes:
-  stable-diffusion-models:
+  data:
+  output:
